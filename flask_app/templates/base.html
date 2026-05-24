@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MangaForge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;--border:#2d3748;--text:#e6edf3;--text2:#8b949e;--accent:#7ec8e3;--green:#a8e6cf;--pink:#f4aeba;--purple:#c3aed6;--yellow:#ffd3b6;--orange:#ffb347;--error:#ff6b6b}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;position:relative}
+#dot-matrix{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden}
+.dot{position:absolute;width:3px;height:3px;background:rgba(126,200,227,.12);animation:m 20s linear infinite}
+@keyframes m{0%{transform:translate(0,0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translate(100px,100px);opacity:0}}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,17,23,.97);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;height:52px;padding:0 20px}
+.nav-logo{color:var(--accent);font-size:18px;font-weight:700;text-decoration:none;margin-right:28px}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:12px;margin:0 10px;transition:color .15s}
+.nav-links a:hover{color:var(--accent)}
+.nav-right{margin-left:auto}
+.main-content{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:72px 20px 40px}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border:1px solid var(--border);background:var(--bg3);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;cursor:pointer;transition:border-color .15s,color .15s;text-decoration:none}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn-sm{padding:4px 10px;font-size:11px}
+input,textarea,select{background:var(--bg3);border:1px solid var(--border);padding:8px 12px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;width:100%;transition:border-color .15s}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+.search-bar{display:flex;gap:8px;margin:16px 0}
+.search-bar input{flex:1;padding:10px 14px;font-size:14px}
+.tag{display:inline-block;padding:2px 8px;border:1px solid var(--border);font-size:11px;color:var(--text2);margin:2px}
+.manga-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin:16px 0}
+.manga-card{border:1px solid var(--border);overflow:hidden;transition:border-color .15s;text-decoration:none;color:var(--text);display:block}
+.manga-card:hover{border-color:var(--accent)}
+.manga-card .cover{width:100%;aspect-ratio:3/4;background:var(--bg3);display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:12px;overflow:hidden}
+.manga-card .cover img{width:100%;height:100%;object-fit:cover}
+.manga-card .info{padding:10px}
+.manga-card .info .title{font-size:13px;font-weight:500;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.manga-card .info .source{font-size:11px;color:var(--text2)}
+.progress-bar{width:100%;height:4px;background:var(--bg3)}
+.progress-bar .fill{height:100%;background:var(--accent);transition:width .3s}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
+.tab{padding:8px 16px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;font-size:12px;transition:color .15s,border-color .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.fade-in{animation:fi .3s ease forwards}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border)}
+.spinner{width:20px;height:20px;border:2px solid var(--border);border-top-color:var(--accent);animation:s .8s linear infinite;margin:8px auto}
+@keyframes s{to{transform:rotate(360deg)}}
+.flash{padding:10px 14px;margin:8px 0;font-size:12px;border:1px solid}
+.flash-success{border-color:var(--green);color:var(--green);background:rgba(168,230,207,.05)}
+.flash-error{border-color:var(--error);color:var(--error);background:rgba(255,107,107,.05)}
+.section-title{font-size:20px;font-weight:700;color:var(--accent);margin:24px 0 12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+@media(max-width:768px){.manga-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.nav-links{display:none}.search-bar{flex-direction:column}}
+.card{border:1px solid var(--border);padding:16px;margin-bottom:12px;transition:border-color .15s}
+.card:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div id="dot-matrix"></div>
+<nav>
+<div class="nav-inner">
+<a href="/" class="nav-logo">MangaForge</a>
+<div class="nav-links">
+<a href="/">Home</a>
+<a href="/search">Search</a>
+<a href="/docs">Docs</a>
+<a href="/settings">Settings</a>
+</div>
+<div class="nav-right"><a href="/settings" class="btn btn-sm">Settings</a></div>
+</div>
+</nav>
+<div class="main-content">{% block content %}{% endblock %}</div>
+<script>
+(function(){var c=document.getElementById('dot-matrix');for(var i=0;i<60;i++){var d=document.createElement('div');d.className='dot';d.style.left=Math.random()*100+'%';d.style.top=Math.random()*100+'%';d.style.animationDelay=Math.random()*20+'s';d.style.animationDuration=(15+Math.random()*15)+'s';var s=2+Math.random()*3;d.style.width=s+'px';d.style.height=s+'px';c.appendChild(d)}})();
+async function apiFetch(url,opts){const r=await fetch(url,{headers:{'Content-Type':'application/json',...opts.headers},...opts});return r.json()}
+function showFlash(msg,type){var f=document.createElement('div');f.className='flash flash-'+type;f.textContent=msg;document.querySelector('.main-content').insertBefore(f,document.querySelector('.main-content').firstChild);setTimeout(function(){f.remove()},5000)}
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="fade-in">
+
+<h2 class="section-title">Search</h2>
+
+<form class="search-bar" action="/search" method="GET">
+<input type="text" name="q" value="{{ query }}" placeholder="Search manga..." style="flex:1">
+<button type="submit" class="btn">Search</button>
+</form>
+
+{% if query and results %}
+<p style="color:var(--text2);font-size:12px;margin-bottom:12px">{{ results|length }} results for "{{ query }}"</p>
+<div class="manga-grid">
+{% for manga in results %}
+<a href="/manga/{{ manga.source }}/{{ manga.id }}" class="manga-card">
+<div class="cover">
+{% if manga.cover_url %}<img src="{{ manga.cover_url }}" alt="{{ manga.title }}" loading="lazy" onerror="this.parentElement.innerHTML='<span>{{ manga.title[:2]|upper }}</span>'">{% else %}<span>{{ manga.title[:2]|upper }}</span>{% endif %}
+</div>
+<div class="info">
+<div class="title">{{ manga.title[:40] }}</div>
+<div class="source">{{ manga.source|upper }}</div>
+{% if manga.tags %}<div style="margin-top:4px">{% for tag in manga.tags[:3] %}<span class="tag">{{ tag[:12] }}</span>{% endfor %}</div>{% endif %}
+</div>
+</a>
+{% endfor %}
+</div>
+
+{% elif query %}
+<div style="border:1px solid var(--border);padding:24px;text-align:center">
+<p style="color:var(--text2);font-size:12px">No results for "{{ query }}"</p>
+</div>
+{% else %}
+<div style="border:1px solid var(--border);padding:24px;text-align:center">
+<p style="color:var(--text2);font-size:12px">Enter a query to search</p>
+<div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+<a href="/search?q=one+piece" class="btn btn-sm">One Piece</a>
+<a href="/search?q=naruto" class="btn btn-sm">Naruto</a>
+<a href="/search?q=solo+leveling" class="btn btn-sm">Solo Leveling</a>
+<a href="/search?q=jujutsu+kaisen" class="btn btn-sm">Jujutsu Kaisen</a>
+<a href="/search?q=berserk" class="btn btn-sm">Berserk</a>
+</div>
+</div>
+{% endif %}
+
+</div>
+{% endblock %}

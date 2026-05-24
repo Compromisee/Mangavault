@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="fade-in" style="max-width:960px;margin:0 auto;padding:0 24px">
+
+<div style="border-bottom:2px solid var(--border);padding-bottom:20px;margin-bottom:28px">
+<h1 style="font-size:26px;font-weight:700;color:var(--accent);margin-bottom:4px">MangaForge</h1>
+<p style="color:var(--text2);font-size:13px">CLI Documentation &mdash; v1.0</p>
+<div style="margin-top:8px">
+<span style="display:inline-block;padding:2px 8px;margin:2px;border:1px solid var(--border);font-size:11px;color:var(--text2)">CLI</span>
+<span style="display:inline-block;padding:2px 8px;margin:2px;border:1px solid var(--border);font-size:11px;color:var(--text2)">TUI</span>
+<span style="display:inline-block;padding:2px 8px;margin:2px;border:1px solid var(--border);font-size:11px;color:var(--text2)">GUI</span>
+<span style="display:inline-block;padding:2px 8px;margin:2px;border:1px solid var(--border);font-size:11px;color:var(--text2)">Flask</span>
+</div>
+</div>
+
+<div style="margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:12px;font-size:12px">
+<a href="#quickstart" style="color:var(--text2);text-decoration:none;margin-right:20px">Quick Start</a>
+<a href="#global" style="color:var(--text2);text-decoration:none;margin-right:20px">Global Options</a>
+<a href="#commands" style="color:var(--text2);text-decoration:none;margin-right:20px">Commands</a>
+<a href="#examples" style="color:var(--text2);text-decoration:none;margin-right:20px">Examples</a>
+<a href="#interfaces" style="color:var(--text2);text-decoration:none;margin-right:20px">Interfaces</a>
+<a href="#formats" style="color:var(--text2);text-decoration:none;margin-right:20px">Formats</a>
+<a href="#sources" style="color:var(--text2);text-decoration:none;margin-right:20px">Sources</a>
+<a href="#notes" style="color:var(--text2);text-decoration:none">Notes</a>
+</div>
+
+<section id="quickstart" style="margin-bottom:28px">
+<h2 style="font-size:17px;font-weight:700;color:var(--accent);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--border)">Quick Start</h2>
+<div style="border:1px solid var(--border);padding:14px;margin-bottom:10px">
+<pre style="background:var(--bg2);padding:14px;overflow-x:auto;font-size:12px;line-height:1.5;margin:0;border:none"><span style="color:var(--pastel-green)"># Search manga</span>
+python cli.py search <span style="color:var(--accent)">"One Piece"</span>
+
+<span style="color:var(--pastel-green)"># Download all chapters as EPUB (default)</span>
+python cli.py download --id <span style="color:var(--accent)">&lt;manga_id&gt;</span> --source mangadex
+
+<span style="color:var(--pastel-green)"># Download specific chapters as CBZ</span>
+python cli.py download --id <span style="color:var(--accent)">&lt;id&gt;</span> --chapters 1,2,3 --format cbz
+
+<span style="color:var(--pastel-green)"># Bulk download from file</span>
+python cli.py bulk --file <span style="color:var(--accent)">urls.txt</span> --concurrent 3</pre>
+</div>
+</section>
+
+<section id="global" style="margin-bottom:28px">
+<h2 style="font-size:17px;font-weight:700;color:var(--accent);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--border)">Global Options</h2>
+<table style="width:100%;border-collapse:collapse;font-size:12px">
+<tr><th style="text-align:left;padding:6px 8px;color:var(--accent);border-bottom:2px solid var(--border);font-weight:500">Option</th><th style="padding:6px 8px;color:var(--accent);border-bottom:2px solid var(--border);font-weight:500">Default</th><th style="padding:6px 8px;color:var(--accent);border-bottom:2px solid var(--border);font-weight:500">Description</th></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)"><code>--format</code></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">epub</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">epub, cbz, pdf</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)"><code>-o, --output-dir</code></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">downloads</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">Output directory</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)"><code>--lang</code></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">en</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">Language filter</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)"><code>--rating</code></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">any</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">safe, suggestive, erotica, pornographic, any</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)"><code>--crop</code></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">false</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">Enable cropping (disabled by default)</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)"><code>--quality</code></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">85</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">Image quality 1-100</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)"><code>--concurrent</code></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">3</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">Concurrent downloads</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)"><code>--sources</code></td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">all</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">mangadex, asurascans, webtoons, hitomi</td></tr>
+</table>
+</section>
+
+<section id="commands" style="margin-bottom:28px">
+<h2 style="font-size:17px;font-weight:700;color:var(--accent);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--border)">Commands</h2>
+
+<h4 style="font-size:13px;font-weight:500;color:var(--pastel-green);margin:14px 0 4px">search &lt;query&gt;</h4>
+<p style="color:var(--text2);font-size:12px;margin-bottom:6px">Search manga across sources. Flags: --sources, --rating, --limit.</p>
+<pre style="background:var(--bg2);border:1px solid var(--border);padding:12px;overflow-x:auto;font-size:12px;margin:4px 0 12px">python cli.py search <span style="color:var(--accent)">"Berserk"</span>
+python cli.py search <span style="color:var(--accent)">"Solo Leveling"</span> --sources mangadex,asurascans</pre>
+
+<h4 style="font-size:13px;font-weight:500;color:var(--pastel-pink);margin:14px 0 4px">info [--id] [--url] [--source] [--list]</h4>
+<p style="color:var(--text2);font-size:12px;margin-bottom:6px">Get manga details, description, tags, chapters, volumes.</p>
+<pre style="background:var(--bg2);border:1px solid var(--border);padding:12px;overflow-x:auto;font-size:12px;margin:4px 0 12px">python cli.py info --id <span style="color:var(--accent)">abc-123</span> --source mangadex --list</pre>
+
+<h4 style="font-size:13px;font-weight:500;color:var(--pastel-yellow);margin:14px 0 4px">download [options]</h4>
+<p style="color:var(--text2);font-size:12px;margin-bottom:6px">Download with full control over chapters, volumes, format, split or single file.</p>
+<pre style="background:var(--bg2);border:1px solid var(--border);padding:12px;overflow-x:auto;font-size:12px;margin:4px 0 12px">python cli.py download --id <span style="color:var(--accent)">abc-123</span> --format epub --split
+python cli.py download --id <span style="color:var(--accent)">abc-123</span> --chapters 1,2,3 --format cbz
+python cli.py download --id <span style="color:var(--accent)">abc-123</span> --volumes 1,2 --crop --quality 90
+python cli.py download --id <span style="color:var(--accent)">abc-123</span> --no-split --format epub
+python cli.py download --url <span style="color:var(--accent)">"https://mangadex.org/title/abc-123"</span></pre>
+
+<h4 style="font-size:13px;font-weight:500;color:var(--pastel-purple);margin:14px 0 4px">bulk --file | --urls</h4>
+<p style="color:var(--text2);font-size:12px;margin-bottom:6px">Bulk download from a file or comma-separated URLs.</p>
+<pre style="background:var(--bg2);border:1px solid var(--border);padding:12px;overflow-x:auto;font-size:12px;margin:4px 0 12px">python cli.py bulk --file <span style="color:var(--accent)">urls.txt</span> --format epub --concurrent 5</pre>
+</section>
+
+<section id="interfaces" style="margin-bottom:28px">
+<h2 style="font-size:17px;font-weight:700;color:var(--accent);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--border)">Interfaces</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px">
+<div style="border:1px solid var(--border);padding:14px;text-align:center">
+<h4 style="font-size:13px;color:var(--accent);margin-bottom:4px">CLI</h4>
+<p style="color:var(--text2);font-size:11px;margin-bottom:6px">Command-line with pyfiglet headers</p>
+<code style="font-size:11px">python cli.py</code>
+</div>
+<div style="border:1px solid var(--border);padding:14px;text-align:center">
+<h4 style="font-size:13px;color:var(--pastel-green);margin-bottom:4px">TUI</h4>
+<p style="color:var(--text2);font-size:11px;margin-bottom:6px">Interactive terminal UI</p>
+<code style="font-size:11px">python tui.py</code>
+</div>
+<div style="border:1px solid var(--border);padding:14px;text-align:center">
+<h4 style="font-size:13px;color:var(--pastel-pink);margin-bottom:4px">GUI</h4>
+<p style="color:var(--text2);font-size:11px;margin-bottom:6px">Desktop app with preview</p>
+<code style="font-size:11px">python gui.py</code>
+</div>
+<div style="border:1px solid var(--border);padding:14px;text-align:center">
+<h4 style="font-size:13px;color:var(--pastel-purple);margin-bottom:4px">Flask</h4>
+<p style="color:var(--text2);font-size:11px;margin-bottom:6px">Web server</p>
+<code style="font-size:11px">python flask_app/app.py</code>
+</div>
+</div>
+</section>
+
+<section id="formats" style="margin-bottom:28px">
+<h2 style="font-size:17px;font-weight:700;color:var(--accent);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--border)">Output Formats</h2>
+<table style="width:100%;border-collapse:collapse;font-size:12px">
+<tr><th style="text-align:left;padding:6px 8px;color:var(--accent);border-bottom:2px solid var(--border)">Format</th><th style="padding:6px 8px;color:var(--accent);border-bottom:2px solid var(--border)">Use</th><th style="padding:6px 8px;color:var(--accent);border-bottom:2px solid var(--border)">Details</th></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)">EPUB</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">E-readers</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">Kindle, Kobo, Apple Books. Metadata and cover included.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)">CBZ</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">Comic readers</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">ZIP of JPEG images. CDisplayEx, YACReader.</td></tr>
+<tr><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)">PDF</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">Universal</td><td style="padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)">Fixed-layout format.</td></tr>
+</table>
+</section>
+
+<section id="notes" style="margin-bottom:28px">
+<h2 style="font-size:17px;font-weight:700;color:var(--accent);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--border)">Notes</h2>
+<ul style="padding-left:18px;margin:8px 0">
+<li style="color:var(--text2);font-size:12px;margin-bottom:4px">Cropping is <strong>disabled by default</strong> &mdash; full-size images</li>
+<li style="color:var(--text2);font-size:12px;margin-bottom:4px">Default format: <strong>EPUB</strong></li>
+<li style="color:var(--text2);font-size:12px;margin-bottom:4px">Default rating: <strong>any</strong> (all content levels)</li>
+<li style="color:var(--text2);font-size:12px;margin-bottom:4px">EPUB files include embedded metadata (title, author, cover art)</li>
+<li style="color:var(--text2);font-size:12px;margin-bottom:4px">Naming variables: <code>{title}</code>, <code>{chapter}</code>, <code>{volume}</code>, <code>{source}</code></li>
+</ul>
+</section>
+
+<div style="border-top:1px solid var(--border);padding-top:14px;margin-top:28px;color:var(--text2);font-size:11px">MangaForge v1.0</div>
+
+</div>
+{% endblock %}

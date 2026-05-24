@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="fade-in" style="max-width:600px;margin:0 auto">
+
+<h2 class="section-title">Settings</h2>
+
+<form method="POST" action="/settings">
+<div class="card" style="margin-bottom:12px">
+<h3 style="color:var(--accent);font-size:14px;margin-bottom:12px">Download</h3>
+<div style="display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center;font-size:12px">
+<label style="color:var(--text2)">Format</label>
+<div style="display:flex;gap:8px">
+{% for f in ['epub','cbz','pdf'] %}
+<label style="display:flex;align-items:center;gap:3px;cursor:pointer">
+<input type="radio" name="format" value="{{ f }}" {% if settings.format==f %}checked{% endif %}>
+<span>{{ f|upper }}</span>
+</label>
+{% endfor %}
+</div>
+
+<label style="color:var(--text2)">Quality</label>
+<input type="range" name="quality" min="10" max="100" value="{{ settings.quality }}" oninput="this.nextElementSibling.textContent=this.value" style="flex:1">
+<span style="min-width:24px">{{ settings.quality }}</span>
+
+<label style="color:var(--text2)">Output</label>
+<input type="text" name="output_dir" value="{{ settings.output_dir }}">
+
+<label style="color:var(--text2)">Language</label>
+<select name="lang"><option value="en" {% if settings.lang=='en' %}selected{% endif %}>English</option><option value="jp" {% if settings.lang=='jp' %}selected{% endif %}>Japanese</option><option value="ko" {% if settings.lang=='ko' %}selected{% endif %}>Korean</option><option value="zh" {% if settings.lang=='zh' %}selected{% endif %}>Chinese</option></select>
+
+<label style="color:var(--text2)">Rating</label>
+<select name="rating"><option value="any" {% if settings.rating=='any' %}selected{% endif %}>Any</option><option value="safe" {% if settings.rating=='safe' %}selected{% endif %}>Safe</option><option value="suggestive" {% if settings.rating=='suggestive' %}selected{% endif %}>Suggestive</option><option value="erotica" {% if settings.rating=='erotica' %}selected{% endif %}>Erotica</option></select>
+
+<label style="color:var(--text2)">Concurrent</label>
+<input type="number" name="concurrent" value="{{ settings.concurrent }}" min="1" max="10" style="width:60px">
+</div>
+
+<div style="margin-top:12px;display:flex;gap:16px">
+<label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px"><input type="checkbox" name="split" {% if settings.split %}checked{% endif %}> Split chapters</label>
+<label style="display:flex;align-items:center;gap:4px;cursor:pointer;font-size:12px"><input type="checkbox" name="crop" {% if settings.crop %}checked{% endif %}> Crop (off by default)</label>
+</div>
+</div>
+
+<div class="card" style="margin-bottom:12px">
+<h3 style="color:var(--purple);font-size:14px;margin-bottom:8px">Naming</h3>
+<label style="color:var(--text2);font-size:11px">Scheme</label>
+<input type="text" name="naming_scheme" value="{{ settings.naming_scheme }}" placeholder="{title}_ch{chapter}" style="margin-top:4px">
+<p style="color:var(--text2);font-size:11px;margin-top:4px">Variables: {title}, {chapter}, {volume}, {source}</p>
+</div>
+
+<div style="display:flex;gap:8px;justify-content:flex-end">
+<a href="/" class="btn">Cancel</a>
+<button type="submit" class="btn" style="border-color:var(--accent);color:var(--accent)">Save</button>
+</div>
+</form>
+
+</div>
+{% endblock %}

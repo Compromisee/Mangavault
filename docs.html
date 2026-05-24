@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>MangaForge &middot; CLI Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#1c2333;--border:#2d3748;--text:#e6edf3;--text2:#8b949e;--accent:#7ec8e3;--green:#a8e6cf;--pink:#f4aeba;--purple:#c3aed6;--yellow:#ffd3b6;--orange:#ffb347}
+body{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6}
+.wrap{max-width:960px;margin:0 auto;padding:40px 24px}
+header{border-bottom:2px solid var(--border);padding-bottom:24px;margin-bottom:32px}
+header h1{font-size:28px;font-weight:700;color:var(--accent);margin-bottom:4px}
+header p{color:var(--text2);font-size:13px}
+header .tags{margin-top:8px}
+header .tags span{display:inline-block;padding:2px 8px;margin:2px;border:1px solid var(--border);font-size:11px;color:var(--text2)}
+nav{margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:12px}
+nav a{color:var(--text2);text-decoration:none;font-size:12px;margin-right:20px;transition:color .15s}
+nav a:hover{color:var(--accent)}
+section{margin-bottom:32px}
+section h2{font-size:18px;font-weight:700;color:var(--accent);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+section h3{font-size:14px;font-weight:500;color:var(--green);margin:16px 0 8px}
+section h4{font-size:13px;font-weight:500;color:var(--text);margin:12px 0 4px}
+p{color:var(--text2);font-size:13px;margin-bottom:8px}
+code{font-family:'JetBrains Mono',monospace;background:var(--bg3);padding:1px 5px;font-size:12px;color:var(--accent)}
+pre{background:var(--bg2);border:1px solid var(--border);padding:14px;overflow-x:auto;font-size:12px;line-height:1.5;margin:8px 0 16px;color:var(--text)}
+pre .c{color:var(--green)}
+pre .k{color:var(--accent)}
+table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0 16px}
+th{text-align:left;padding:6px 8px;color:var(--accent);border-bottom:2px solid var(--border);font-weight:500}
+td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text2)}
+td:first-child{color:var(--text)}
+ul{padding-left:18px;margin:8px 0 16px}
+ul li{color:var(--text2);font-size:12px;margin-bottom:4px}
+.blk{border:1px solid var(--border);padding:16px;margin-bottom:12px;transition:border-color .15s}
+.blk:hover{border-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:8px 0 16px}
+.grid .ic{border:1px solid var(--border);padding:14px;text-align:center;transition:border-color .15s}
+.grid .ic:hover{border-color:var(--accent)}
+.grid .ic h4{font-size:13px;margin-bottom:4px}
+.grid .ic p{font-size:11px;margin-bottom:6px}
+.grid .ic code{font-size:11px}
+footer{border-top:1px solid var(--border);padding-top:16px;margin-top:32px;color:var(--text2);font-size:11px}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<h1>MangaForge</h1>
+<p>CLI Documentation &mdash; v1.0</p>
+<div class="tags">
+<span>CLI</span><span>TUI</span><span>GUI</span><span>Flask</span>
+</div>
+</header>
+
+<nav>
+<a href="#quickstart">Quick Start</a>
+<a href="#global">Global Options</a>
+<a href="#commands">Commands</a>
+<a href="#examples">Examples</a>
+<a href="#interfaces">Interfaces</a>
+<a href="#formats">Formats</a>
+<a href="#sources">Sources</a>
+<a href="#notes">Notes</a>
+</nav>
+
+<section id="quickstart">
+<h2>Quick Start</h2>
+<div class="blk">
+<pre><span class="c"># Search manga</span>
+python cli.py search <span class="k">"One Piece"</span>
+
+<span class="c"># Download all chapters as EPUB (default format)</span>
+python cli.py download --id <span class="k">&lt;manga_id&gt;</span> --source mangadex
+
+<span class="c"># Download specific chapters as CBZ</span>
+python cli.py download --id <span class="k">&lt;id&gt;</span> --chapters 1,2,3 --format cbz
+
+<span class="c"># Download by URL</span>
+python cli.py download --url <span class="k">"https://mangadex.org/title/..."</span>
+
+<span class="c"># Bulk download from file</span>
+python cli.py bulk --file <span class="k">urls.txt</span> --concurrent 3
+
+<span class="c"># Launch interactive TUI</span>
+python tui.py
+
+<span class="c"># Launch desktop GUI</span>
+python gui.py
+
+<span class="c"># Launch web server</span>
+python flask_app/app.py</pre>
+</div>
+</section>
+
+<section id="global">
+<h2>Global Options</h2>
+<table>
+<tr><th>Option</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>--format</code></td><td>epub</td><td>Output format: epub, cbz, pdf</td></tr>
+<tr><td><code>-o, --output-dir</code></td><td>downloads</td><td>Output directory for downloaded files</td></tr>
+<tr><td><code>--lang</code></td><td>en</td><td>Language filter for chapters</td></tr>
+<tr><td><code>--rating</code></td><td>any</td><td>Content rating: safe, suggestive, erotica, pornographic, any</td></tr>
+<tr><td><code>--crop</code></td><td>false</td><td>Enable cropping (disabled by default, full-size images)</td></tr>
+<tr><td><code>--quality</code></td><td>85</td><td>Image compression quality 1-100</td></tr>
+<tr><td><code>--concurrent</code></td><td>3</td><td>Number of concurrent download threads</td></tr>
+<tr><td><code>--sources</code></td><td>all</td><td>Comma-separated: mangadex, asurascans, webtoons, hitomi</td></tr>
+<tr><td><code>--limit</code></td><td>20</td><td>Maximum search results</td></tr>
+</table>
+</section>
+
+<section id="commands">
+<h2>Commands</h2>
+
+<h3>search &lt;query&gt;</h3>
+<p>Search manga across enabled sources. Accepts --sources, --rating, and --limit flags.</p>
+<pre><span class="c"># Basic search across all sources</span>
+python cli.py search <span class="k">"Berserk"</span>
+
+<span class="c"># Search specific sources only</span>
+python cli.py search <span class="k">"Solo Leveling"</span> --sources mangadex,asurascans
+
+<span class="c"># Filter results by content rating</span>
+python cli.py search <span class="k">"Naruto"</span> --rating safe
+
+<span class="c"># Increase result limit</span>
+python cli.py search <span class="k">"One Piece"</span> --limit 50</pre>
+
+<h3>info [--id] [--url] [--source] [--list]</h3>
+<p>Retrieve detailed manga information including description, tags, chapter and volume lists.</p>
+<pre><span class="c"># Get info by ID</span>
+python cli.py info --id <span class="k">abc-123-def</span> --source mangadex
+
+<span class="c"># Get info by URL</span>
+python cli.py info --url <span class="k">"https://mangadex.org/title/abc-123-def"</span>
+
+<span class="c"># Show all available chapters</span>
+python cli.py info --id <span class="k">abc-123</span> --source mangadex --list</pre>
+
+<h3>download [--id] [--url] [--source] [--chapters] [--volumes] [--split/--no-split]</h3>
+<p>Download manga with full control over what and how to download. Supports chapter ranges, volume selection, split or single-file output.</p>
+<pre><span class="c"># Download everything as EPUB (default)</span>
+python cli.py download --id <span class="k">abc-123</span> --source mangadex
+
+<span class="c"># Download as CBZ with high quality</span>
+python cli.py download --id <span class="k">abc-123</span> --format cbz --quality 95
+
+<span class="c"># Download specific chapters (comma-separated or range)</span>
+python cli.py download --id <span class="k">abc-123</span> --chapters 1,2,3,5-10
+
+<span class="c"># Download full volumes</span>
+python cli.py download --id <span class="k">abc-123</span> --volumes 1,2
+
+<span class="c"># Combine all chapters into a single file</span>
+python cli.py download --id <span class="k">abc-123</span> --no-split --format epub
+
+<span class="c"># Download from a URL</span>
+python cli.py download --url <span class="k">"https://mangadex.org/title/abc-123"</span>
+
+<span class="c"># Enable cropping with custom quality</span>
+python cli.py download --id <span class="k">abc-123</span> --crop --quality 90
+
+<span class="c"># Specify output directory</span>
+python cli.py download --id <span class="k">abc-123</span> -o <span class="k">"/path/to/manga"</span></pre>
+
+<h3>bulk --file | --urls</h3>
+<p>Process multiple URLs from a file or comma-separated list. Each URL is parsed and downloaded automatically.</p>
+<pre><span class="c"># Bulk from file (one URL per line)</span>
+python cli.py bulk --file <span class="k">urls.txt</span> --format epub --concurrent 5
+
+<span class="c"># Bulk from command line</span>
+python cli.py bulk --urls <span class="k">"url1,url2,url3"</span> --format cbz
+
+<span class="c"># Bulk with language filter</span>
+python cli.py bulk --file <span class="k">manga_list.txt</span> --format epub --lang en</pre>
+</section>
+
+<section id="examples">
+<h2>Advanced Usage</h2>
+
+<h3>Naming Schemes</h3>
+<p>Custom output filenames using variables: <code>{title}</code>, <code>{chapter}</code>, <code>{volume}</code>, <code>{source}</code></p>
+<pre><span class="c"># Default naming</span>
+{title}_ch{chapter}.epub
+
+<span class="c"># Volume and chapter prefix</span>
+{title}_Vol.{volume}_Ch.{chapter}.cbz
+
+<span class="c"># Source-prefixed naming</span>
+[{source}] {title} - Chapter {chapter}.epub</pre>
+
+<h3>Metadata</h3>
+<p>EPUB files include embedded metadata: title, author, cover art, and publisher. Use the GUI or web interface to edit metadata fields before downloading.</p>
+
+<h3>Rating Filtering</h3>
+<pre><span class="c"># Include all content ratings (default)</span>
+--rating any
+
+<span class="c"># Safe content only</span>
+--rating safe
+
+<span class="c"># Specific levels</span>
+--rating suggestive
+--rating erotica
+--rating pornographic</pre>
+
+<h3>Source Features</h3>
+<table>
+<tr><th>Source</th><th>Capabilities</th></tr>
+<tr><td>MangaDex</td><td>Full search, chapters, volumes, cover art, multiple languages, tags, content rating</td></tr>
+<tr><td>AsuraScans</td><td>Search, chapters, covers, ratings</td></tr>
+<tr><td>Webtoons</td><td>Basic search via HTML scraping</td></tr>
+<tr><td>Hitomi</td><td>Gallery search, image downloads</td></tr>
+</table>
+</section>
+
+<section id="interfaces">
+<h2>Interfaces</h2>
+<div class="grid">
+<div class="ic">
+<h4>CLI</h4>
+<p>Command-line with pyfiglet headers and progress bars</p>
+<code>python cli.py</code>
+</div>
+<div class="ic">
+<h4>TUI</h4>
+<p>Interactive terminal UI with rich formatting and menus</p>
+<code>python tui.py</code>
+</div>
+<div class="ic">
+<h4>GUI</h4>
+<p>Desktop application with preview and metadata editor</p>
+<code>python gui.py</code>
+</div>
+<div class="ic">
+<h4>Flask</h4>
+<p>Web server with animated UI and download management</p>
+<code>python flask_app/app.py</code>
+</div>
+</div>
+</section>
+
+<section id="formats">
+<h2>Output Formats</h2>
+<table>
+<tr><th>Format</th><th>Use Case</th><th>Details</th></tr>
+<tr><td>EPUB</td><td>E-readers</td><td>Standard format for Kindle, Kobo, Apple Books. Includes metadata and cover art.</td></tr>
+<tr><td>CBZ</td><td>Comic readers</td><td>ZIP archive of JPEG images. Supported by CDisplayEx, YACReader, and others.</td></tr>
+<tr><td>PDF</td><td>Universal</td><td>Fixed-layout format for general use.</td></tr>
+</table>
+</section>
+
+<section id="sources">
+<h2>Sources</h2>
+<table>
+<tr><th>Source</th><th>ID Type</th><th>URL Pattern</th></tr>
+<tr><td>MangaDex</td><td>UUID</td><td>mangadex.org/title/{uuid}</td></tr>
+<tr><td>AsuraScans</td><td>Slug</td><td>asuracomic.net/manga/{slug}</td></tr>
+<tr><td>Webtoons</td><td>Number</td><td>webtoons.com/.../list?title_no={n}</td></tr>
+<tr><td>Hitomi</td><td>Number</td><td>hitomi.la/reader/{n}.html</td></tr>
+</table>
+</section>
+
+<section id="notes">
+<h2>Notes</h2>
+<ul>
+<li>Cropping is <strong>disabled by default</strong> &mdash; all images are saved at full original size</li>
+<li>Default output format is <strong>EPUB</strong></li>
+<li>Default content rating is <strong>any</strong> (includes safe, suggestive, erotica, and pornographic)</li>
+<li>EPUB files include embedded metadata: title, author, cover art</li>
+<li>Concurrent downloads speed up bulk operations (default: 3)</li>
+<li>Naming scheme variables: <code>{title}</code>, <code>{chapter}</code>, <code>{volume}</code>, <code>{source}</code></li>
+<li>Install all dependencies: <code>pip install -r requirements.txt</code></li>
+</ul>
+</section>
+
+<footer>MangaForge v1.0 &middot; Built with Python</footer>
+
+</div>
+</body>
+</html>

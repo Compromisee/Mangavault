@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="fade-in">
+
+<div style="text-align:center;padding:24px 0 16px">
+<h1 style="font-size:28px;font-weight:700;color:var(--accent);margin-bottom:4px">MangaForge</h1>
+<p style="color:var(--text2);font-size:13px">Download manga from multiple sources. EPUB, CBZ, PDF. No cropping.</p>
+</div>
+
+<form class="search-bar" action="/search" method="GET">
+<input type="text" name="q" placeholder="Search manga by title..." style="flex:1;font-size:14px" autofocus>
+<button type="submit" class="btn" style="font-size:13px">Search</button>
+<a href="/docs" class="btn" style="font-size:13px">Docs</a>
+</form>
+
+<div style="display:flex;gap:8px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;font-size:12px">
+<a href="/search?q=&sources=mangadex" class="btn btn-sm">MangaDex</a>
+<a href="/search?q=&sources=asurascans" class="btn btn-sm">AsuraScans</a>
+<a href="/search?q=&sources=webtoons" class="btn btn-sm">Webtoons</a>
+<a href="/search?q=&sources=hitomi" class="btn btn-sm">Hitomi</a>
+<span style="color:var(--text2)">|</span>
+<a href="#" class="btn btn-sm" onclick="document.getElementById('url-panel').style.display='block';return false">URL Download</a>
+<a href="#" class="btn btn-sm" onclick="document.getElementById('bulk-panel').style.display='block';return false">Bulk</a>
+</div>
+
+<div id="url-panel" class="card" style="display:none;margin-bottom:16px">
+<h3 style="color:var(--accent);font-size:14px;margin-bottom:8px">Download by URL</h3>
+<div style="display:flex;gap:8px">
+<input type="text" id="url-input" placeholder="https://mangadex.org/title/..." style="flex:1">
+<button class="btn" onclick="downloadByUrl()">Download</button>
+</div>
+<p style="color:var(--text2);font-size:11px;margin-top:4px">MangaDex, AsuraScans, Webtoons, Hitomi</p>
+<div id="url-progress" style="margin-top:8px"></div>
+</div>
+
+<div id="bulk-panel" class="card" style="display:none;margin-bottom:16px">
+<h3 style="color:var(--pink);font-size:14px;margin-bottom:8px">Bulk Download</h3>
+<textarea id="bulk-urls" rows="5" placeholder="Paste URLs, one per line..." style="font-size:12px"></textarea>
+<div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+<label style="color:var(--text2);font-size:11px">Concurrent:</label>
+<input type="number" id="bulk-concurrent" value="3" min="1" max="10" style="width:60px">
+<button class="btn" onclick="bulkDownload()">Start Bulk</button>
+</div>
+<div id="bulk-progress" style="margin-top:8px"></div>
+</div>
+
+{% if trending %}
+<div class="fade-in">
+<h2 class="section-title">Trending</h2>
+<div class="manga-grid">
+{% for manga in trending %}
+<a href="/manga/{{ manga.source }}/{{ manga.id }}" class="manga-card">
+<div class="cover">
+{% if manga.cover_url %}
+<img src="{{ manga.cover_url }}" alt="{{ manga.title }}" loading="lazy" onerror="this.parentElement.innerHTML='<span>{{ manga.title[:2]|upper }}</span>'">
+{% else %}
+<span>{{ manga.title[:2]|upper }}</span>
+{% endif %}
+</div>
+<div class="info">
+<div class="title">{{ manga.title[:40] }}</div>
+<div class="source">{{ manga.source|upper }}{% if manga.year %} &middot; {{ manga.year }}{% endif %}</div>
+</div>
+</a>
+{% endfor %}
+</div>
+</div>
+{% endif %}
+
+</div>
+
+<script>
+function downloadByUrl(){var u=document.getElementById('url-input').value;if(!u)return showFlash('Enter a URL','error');var p=document.getElementById('url-progress');p.innerHTML='<div class="spinner"></div><p style="text-align:center;color:var(--text2);font-size:12px">Processing...</p>';apiFetch('/download/url',{method:'POST',body:JSON.stringify({url:u})}).then(function(d){if(d.error){p.innerHTML='<p style="color:var(--error);font-size:12px">'+d.error+'</p>';return}poll(d.download_id,p)})}
+function bulkDownload(){var u=document.getElementById('bulk-urls').value;var c=document.getElementById('bulk-concurrent').value;if(!u)return showFlash('Paste URLs','error');var p=document.getElementById('bulk-progress');p.innerHTML='<div class="spinner"></div><p style="text-align:center;color:var(--text2);font-size:12px">Processing...</p>';apiFetch('/download/bulk',{method:'POST',body:JSON.stringify({urls:u,concurrent:parseInt(c)})}).then(function(d){poll(d.download_id,p)})}
+function poll(id,el){var c=function(){apiFetch('/download/progress/'+id).then(function(p){if(p.status=='starting'||p.status=='progress'){var pct=p.total?Math.round(p.current/p.total*100):0;el.innerHTML='<div><p style="color:var(--text2);font-size:12px">'+(p.message||'Downloading...')+'</p><div class="progress-bar" style="margin-top:4px"><div class="fill" style="width:'+pct+'%"></div></div></div>';setTimeout(c,1000)}else if(p.status=='complete'){el.innerHTML='<p style="color:var(--green);font-size:12px">'+p.message+'</p>';showFlash(p.message,'success')}else if(p.status=='error'){el.innerHTML='<p style="color:var(--error);font-size:12px">'+p.message+'</p>';showFlash(p.message,'error')}else{setTimeout(c,2000)}})};c()}
+</script>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="fade-in">
+<a href="/search" class="btn btn-sm" style="margin-bottom:12px">&larr; Back</a>
+
+<div style="display:flex;gap:24px;flex-wrap:wrap">
+<div style="flex:0 0 220px">
+<div class="card" style="padding:0">
+{% if manga.cover_url %}
+<img src="{{ manga.cover_url }}" alt="{{ manga.title }}" style="width:100%;display:block" onerror="this.style.display='none'">
+{% endif %}
+<div style="padding:12px;text-align:center">
+<div style="font-weight:700;font-size:14px">{{ manga.title }}</div>
+<div style="color:var(--text2);font-size:11px;margin-top:4px">{{ source|upper }}</div>
+</div>
+</div>
+</div>
+
+<div style="flex:1;min-width:300px">
+<div class="card" style="margin-bottom:12px">
+<h3 style="color:var(--accent);font-size:14px;margin-bottom:8px">Information</h3>
+<div style="display:grid;grid-template-columns:100px 1fr;gap:3px;font-size:12px">
+<span style="color:var(--text2)">Title</span><span>{{ manga.title }}</span>
+<span style="color:var(--text2)">Source</span><span>{{ manga.source|upper }}</span>
+{% if manga.author %}<span style="color:var(--text2)">Author</span><span>{{ manga.author }}</span>{% endif %}
+{% if manga.year %}<span style="color:var(--text2)">Year</span><span>{{ manga.year }}</span>{% endif %}
+{% if manga.status %}<span style="color:var(--text2)">Status</span><span>{{ manga.status }}</span>{% endif %}
+{% if manga.rating %}<span style="color:var(--text2)">Rating</span><span>{{ manga.rating }}</span>{% endif %}
+</div>
+{% if manga.tags %}<div style="margin-top:8px">{% for tag in manga.tags %}<span class="tag">{{ tag }}</span>{% endfor %}</div>{% endif %}
+</div>
+
+{% if manga.description %}
+<div class="card" style="margin-bottom:12px">
+<h3 style="color:var(--purple);font-size:14px;margin-bottom:8px">Description</h3>
+<p style="color:var(--text2);font-size:12px;line-height:1.5">{{ manga.description[:1000] }}</p>
+</div>
+{% endif %}
+
+<div class="card" style="margin-bottom:12px">
+<h3 style="color:var(--green);font-size:14px;margin-bottom:12px">Download</h3>
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+<div><label style="color:var(--text2);font-size:11px">Format</label><select id="dl-fmt" style="width:80px"><option value="epub">EPUB</option><option value="cbz">CBZ</option><option value="pdf">PDF</option></select></div>
+<div><label style="color:var(--text2);font-size:11px">Quality</label><input type="number" id="dl-q" value="85" min="10" max="100" style="width:60px"></div>
+<div style="display:flex;align-items:flex-end;gap:8px">
+<label style="display:flex;align-items:center;gap:3px;color:var(--text2);font-size:12px"><input type="checkbox" id="dl-split" checked> Split</label>
+<label style="display:flex;align-items:center;gap:3px;color:var(--text2);font-size:12px"><input type="checkbox" id="dl-crop"> Crop</label>
+</div>
+</div>
+
+<div class="tabs">
+<div class="tab active" onclick="switchTab('all')">All ({{ chapters|length }})</div>
+<div class="tab" onclick="switchTab('volumes')">Volumes</div>
+<div class="tab" onclick="switchTab('chapters')">Chapters</div>
+</div>
+
+<div id="tab-all">
+<p style="color:var(--text2);font-size:12px;margin-bottom:8px">Download all {{ chapters|length }} chapters</p>
+<button class="btn" onclick="startDl('all')">Download All</button>
+</div>
+
+<div id="tab-volumes" style="display:none">
+<p style="color:var(--text2);font-size:12px;margin-bottom:8px">Select volumes:</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+{% for vol, chs in volumes.items()|sort %}
+<label class="btn btn-sm" style="cursor:pointer"><input type="checkbox" class="vol-cb" value="{{ vol }}" checked> Vol {{ vol }} ({{ chs|length }})</label>
+{% endfor %}
+</div>
+<button class="btn" onclick="startDl('volumes')">Download Selected</button>
+</div>
+
+<div id="tab-chapters" style="display:none">
+<p style="color:var(--text2);font-size:12px;margin-bottom:8px">Select chapters:</p>
+<div style="max-height:250px;overflow-y:auto;margin-bottom:8px">
+{% for c in chapters %}
+<label style="display:flex;align-items:center;gap:6px;padding:2px 0;font-size:12px;cursor:pointer">
+<input type="checkbox" class="ch-cb" value="{{ c.id }}" checked>
+<span style="color:var(--text2)">Ch.{{ c.chapter }}</span>
+<span>{{ c.title[:40] }}</span>
+<span style="color:var(--text2);margin-left:auto;font-size:11px">{% if c.pages %}{{ c.pages }}p{% endif %}</span>
+</label>
+{% endfor %}
+</div>
+<button class="btn" onclick="startDl('chapters')">Download Selected</button>
+</div>
+</div>
+
+<div id="dl-progress" style="display:none"></div>
+</div>
+</div>
+
+<script>
+var curTab='all';
+function switchTab(t){curTab=t;document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active')});document.querySelectorAll('.tab-content').forEach(function(x){x.style.display='none'});var idx={all:1,volumes:2,chapters:3}[t];document.querySelector('.tab:nth-child('+idx+')').classList.add('active');document.getElementById('tab-'+t).style.display='block'}
+async function startDl(mode){
+var fmt=document.getElementById('dl-fmt').value;var q=document.getElementById('dl-q').value;var split=document.getElementById('dl-split').checked;var crop=document.getElementById('dl-crop').checked;
+var ch='',vol='';
+if(mode=='chapters'){ch=Array.from(document.querySelectorAll('.ch-cb:checked')).map(function(x){return x.value}).join(',');if(!ch)return showFlash('Select chapters','error')}
+if(mode=='volumes'){vol=Array.from(document.querySelectorAll('.vol-cb:checked')).map(function(x){return x.value}).join(',');if(!vol)return showFlash('Select volumes','error')}
+var p=document.getElementById('dl-progress');p.style.display='block';p.innerHTML='<div class="spinner"></div><p style="text-align:center;color:var(--text2);font-size:12px">Starting...</p>'
+var d=await apiFetch('/download',{method:'POST',body:JSON.stringify({manga_id:'{{ manga.id }}',source:'{{ source }}',title:'{{ manga.title }}',mode:mode,chapters:ch,volumes:vol,format:fmt,split:split.toString(),crop:crop.toString()})})
+if(d.error){p.innerHTML='<p style="color:var(--error);font-size:12px">'+d.error+'</p>';return}
+(function check(){apiFetch('/download/progress/'+d.download_id).then(function(pg){if(pg.status=='starting'||pg.status=='progress'){var pct=pg.total?Math.round(pg.current/pg.total*100):0;p.innerHTML='<div><p style="color:var(--accent);font-size:12px">'+(pg.message||'Downloading...')+'</p><div class="progress-bar" style="margin-top:4px"><div class="fill" style="width:'+pct+'%"></div></div></div>';setTimeout(check,1000)}else if(pg.status=='complete'){p.innerHTML='<div class="flash flash-success">'+pg.message+'</div>';showFlash(pg.message,'success')}else if(pg.status=='error'){p.innerHTML='<div class="flash flash-error">'+pg.message+'</div>';showFlash(pg.message,'error')}else{setTimeout(check,2000)}})})()}
+</script>
+{% endblock %}
