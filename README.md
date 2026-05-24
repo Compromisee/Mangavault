@@ -1,6 +1,10 @@
 # Mangavault
 
-NOTHING WORKS SO FAR planning to revisit. If you have ideas or issues, open an issue or fork
+> [!WARNING]
+> NOTHING WORKS SO FAR!!!
+> Please bear with me
+
+planning to revisit. If you have ideas or issues, open an issue or fork
 
 Made by me, Compromisee
 
