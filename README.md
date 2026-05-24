@@ -1,8 +1,13 @@
 # Mangavault
 
-NOTHING WORKS SO FAR, planning to revisit, if you have ideas or issues, open an issue or fork
+NOTHING WORKS SO FAR planning to revisit. If you have ideas or issues, open an issue or fork
 
-made my me
+Made by me, Compromisee
 
-check out my other manga projects on my profile
-MangaDL and Mangadeack are fully operational
+Check out my other manga projects on my profile.
+* MangaDL
+*  Mangadeck
+
+Should hopefully be finished by Mid june
+
+
